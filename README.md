@@ -1,6 +1,8 @@
 # sensor.greenely
 _Custom component to get usage data and prices from [Greenely](https://www.greenely.se/) for [Home Assistant](https://www.home-assistant.io/)._
 
+Because Greenely doesn't have an open api yet, we are using the Android user-agent to access data.
+
 ## Installation
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
@@ -22,10 +24,10 @@ key | type | description
 :--- | :--- | :---
 **platform (Required)** | string | `greenely`
 **email (Required)** | string | Your Greenely username.
-**password (Required)** | string | Your Greenely password. Custom name for the sensor. Default `avanza_stock_{stock}`.
+**password (Required)** | string | Your Greenely password.
 **name (Optional)** | string | Custom name for the sensor. Default `greenely`.
-**show_usage (Optional)** | boolean | . Default `false`.
-**show_daily_prices (Optional)** | boolean | . Default `false`.
+**usage (Optional)** | boolean | Creates a sensor showing usage data. Default `true`.
+**prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
 **usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
 
 ## Example
