@@ -145,7 +145,7 @@ class GreenelyUsageSensor(Entity):
         self._icon = "mdi:power-socket-eu"
         self._state = 0
         self._state_attributes = {}
-        self._unit_of_measurement = ''
+        self._unit_of_measurement = 'kWh'
         self._usage_days = usage_days
         self._api = api
 
@@ -185,7 +185,21 @@ class GreenelyUsageSensor(Entity):
             previous_day = today - timedelta(days=i)
             response = self._api.get_usage(str(previous_day.year), str(previous_day.month), str(previous_day.day))
             if response:
-                self._state_attributes[str(i)] = response
+                self.make_attribute(previous_day, response, i)
+
+    def make_attribute(self, date, response, index):
+        points = response.get('points', None)
+        day = []
+        for point in points:
+            usage = point['usage']
+            if usage != None and usage != 0:
+                newPoint = {}
+                newPoint['date'] = date.strftime("%d/%m/%Y")
+                dt_object = datetime.fromtimestamp(point['timestamp'])
+                newPoint['time'] = dt_object.strftime("%H:%M")
+                newPoint['value'] = str(usage / 1000)
+                day.append(newPoint)
+        self._state_attributes['day{}'.format(index)] = json.dumps(day)
 
 class GreenelyAPI():
     """Greenely API."""
