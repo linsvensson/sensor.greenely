@@ -1,4 +1,6 @@
 # sensor.greenely
+[![GitHub last commit](https://img.shields.io/github/last-commit/linsvensson/sensor.greenely)](https://github.com/linsvensson/sensor.greenely)
+
 _Custom component to get usage data and prices from [Greenely](https://www.greenely.se/) for [Home Assistant](https://www.home-assistant.io/)._
 
 Because Greenely doesn't have an open api yet, we are using the Android user-agent to access data.
@@ -29,6 +31,7 @@ key | type | description
 **usage (Optional)** | boolean | Creates a sensor showing usage data. Default `true`.
 **prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
 **usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
+**date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
 
 ## Example
 **Configuration with default settings:**
@@ -43,10 +46,42 @@ sensor:
 ```yaml
 sensor:
   - platform: greenely
-    name: My Greenely Data
+    name: My Greenely
     email: test@gmail.com
     password: 1234
     show_usage: true
     show_daily_prices: true
     usage_days: 4
+	date_format: %d/%m/%Y
+```
+
+## Lovelace
+**Example usage with [flex-table-card](https://github.com/custom-cards/flex-table-card):**
+```yaml
+- type: 'custom:flex-table-card'
+  title: Greenely Usage
+  sort_by: date
+  entities:
+    include: sensor.greenely_usage
+  columns:
+    - name: date
+      attr_as_list: days
+      modify: x.date
+      icon: mdi:calendar
+    - name: kWh
+      attr_as_list: days
+      modify: x.usage
+      icon: mdi:flash
+```
+
+![image](https://user-images.githubusercontent.com/5594088/72650563-2b67aa80-3981-11ea-8101-d54dfb337ee8.PNG)
+
+## Data object structures
+**current_day, next_day & current_month**
+```json
+[{ "date": "Jan 18 2020", "time": "13:00", "price": "24.75" }]
+```
+**days**
+```json
+[{ "date": "Jan 12 2020", "usage": "1.0" }]
 ```
