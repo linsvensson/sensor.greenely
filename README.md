@@ -52,7 +52,7 @@ sensor:
     show_usage: true
     show_daily_prices: true
     usage_days: 4
-	date_format: %d/%m/%Y
+    date_format: %d/%m/%Y
 ```
 
 ## Lovelace
