@@ -7,7 +7,7 @@ import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import CONF_NAME, CONF_EMAIL, CONF_PASSWORD
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.helpers.entity import Entity
 
 __version__ = '1.0.0'
@@ -22,7 +22,6 @@ USAGE_DAYS_DEFAULT = 10
 
 CONF_EMAIL = 'email'
 CONF_PASSWORD = 'password'
-CONF_JWT = 'jwt'
 
 CONF_USAGE_DAYS = 'usage_days'
 CONF_USAGE = 'usage'
@@ -56,7 +55,6 @@ SCAN_INTERVAL = timedelta(minutes=60)
 async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
     """Set up the Greenely sensor."""
-    jwt = config.get(CONF_JWT)
     email = config.get(CONF_EMAIL)
     password = config.get(CONF_PASSWORD)
     
@@ -73,7 +71,7 @@ async def async_setup_platform(hass, config, async_add_entities,
     if usage_days is None:
         usage_days = USAGE_DAYS_DEFAULT
         
-    api = GreenelyAPI(email, password, jwt)
+    api = GreenelyAPI(email, password)
     entities = []
     if show_usage:
         entities.append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, date_format))
@@ -226,9 +224,9 @@ class GreenelyUsageSensor(Entity):
 class GreenelyAPI():
     """Greenely API."""
 
-    def __init__(self, email, password, jwt):
+    def __init__(self, email, password):
         """Initialize Greenely API."""
-        _LOGGER.debug('Initializing api...')
+        self._jwt = ''
         self._url_check_auth = 'https://api2.greenely.com/v1/checkauth'
         self._url_login = 'https://api2.greenely.com/v1/login'
         self._url_retail = 'https://api2.greenely.com/v2/retail/overview'
@@ -236,8 +234,7 @@ class GreenelyAPI():
         self._headers = {'Accept-Language':'sv-SE', 
             'User-Agent':'Android 2 111',
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization':jwt}    
-        self._jwt = jwt
+            'Authorization':self._jwt}    
         self._email = email
         self._password = password
 
@@ -266,7 +263,7 @@ class GreenelyAPI():
 
     def check_auth(self):
         """Check to see if our jwt is valid."""
-        result = requests.post(self._url_check_auth, headers = self._headers)
+        result = requests.get(self._url_check_auth, headers = self._headers)
         if result.status_code == requests.codes.ok:
             _LOGGER.debug('jwt is valid!')
             return True
