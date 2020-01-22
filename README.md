@@ -75,6 +75,44 @@ sensor:
 
 ![image](https://user-images.githubusercontent.com/5594088/72650563-2b67aa80-3981-11ea-8101-d54dfb337ee8.PNG)
 
+**Example prices with [flex-table-card](https://github.com/custom-cards/flex-table-card):**
+```yaml
+- type: custom:vertical-stack-in-card
+  cards:
+    - type: horizontal-stack
+      cards:
+        - type: 'custom:flex-table-card'
+          title: Today
+          sort_by: date
+          entities:
+            include: sensor.greenely_prices
+          columns:
+            - name: time
+              attr_as_list: current_day
+              modify: x.time
+              icon: mdi:clock
+            - name: price(öre/kWh)
+              attr_as_list: current_day
+              modify: Math.round(x.price * 10) / 10
+              icon: mdi:cash
+        - type: 'custom:flex-table-card'
+          title: Tomorrow
+          sort_by: date
+          entities:
+            include: sensor.greenely_prices
+          columns:
+            - name: time
+              attr_as_list: next_day
+              modify: x.time
+              icon: mdi:clock
+            - name: price(öre/kWh)
+              attr_as_list: next_day
+              modify: Math.round(x.price * 10) / 10
+              icon: mdi:cash
+```
+
+![image](https://user-images.githubusercontent.com/5594088/72912188-8e6b8f80-3d3b-11ea-8072-096571fecd41.PNG)
+
 ## Data object structures
 **current_day, next_day & current_month**
 ```json
