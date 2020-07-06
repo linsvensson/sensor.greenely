@@ -48,8 +48,8 @@ sensor:
   - platform: greenely
     email: test@gmail.com
     password: 1234
-    show_usage: true
-    show_daily_prices: false
+    usage: true
+    prices: false
     usage_days: 4
     date_format: %d/%m/%Y
 ```
