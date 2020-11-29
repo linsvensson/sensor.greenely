@@ -201,18 +201,32 @@ class GreenelyUsageSensor(Entity):
                 previous_day = today - timedelta(days=i)
                 response = self._api.get_usage(str(previous_day.year), str(previous_day.month), str(previous_day.day))
                 if response:
-                    usage = self.make_attribute(previous_day, response)
+                    usage = self.make_attribute(previous_day, today, response)
                     if usage:
                         data.append(usage)
+                        
             self._state_attributes['days'] = data
         else:
             _LOGGER.error('Unable to log in!')
 
-    def make_attribute(self, date, response):
+    def make_attribute(self, date, today, response):
         points = response.get('points', None)
         daily_usage = 0
         data = {}
         for point in points:
+            if (date == today):
+                _LOGGER.error("point " + str(point))
+                for key, value in point.items():
+                    _LOGGER.error("GEBEGG " + str(key) + str(value))
+                
+                pointTimestamp = datetime.fromtimestamp(point['timestamp'])
+                if (pointTimestamp.hour == datetime.now().hour):
+                    usage_now = 0
+                    usage_point = point['usage']
+                    if usage_point != None and usage_point != 0:
+                        usage_now += (usage_point / 1000)
+                    self._state = usage_now
+                    _LOGGER.error('usage: ' + str(usage_now))
             usage = point['usage']
             if usage != None and usage != 0:
                 daily_usage += usage
@@ -248,7 +262,7 @@ class GreenelyAPI():
         else:
             _LOGGER.error('Failed to get price data, %s', response.text)
             return data
-          
+            
     def get_usage(self, year, month, day):
         """Get usage data from the Greenely API."""
         url = self._url_data + year + "/" + month + "/" + day + "/usage"
