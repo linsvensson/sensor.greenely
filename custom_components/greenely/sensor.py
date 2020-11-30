@@ -18,7 +18,9 @@ SENSOR_USAGE_NAME = 'Greenely Usage'
 SENSOR_PRICES_NAME = 'Greenely Prices'
 
 DATE_FORMAT_DEFAULT = '%b %d %Y'
+TIME_FORMAT_DEFAULT = '%H:%M'
 USAGE_DAYS_DEFAULT = 10
+SHOW_HOURLY_DEFAULT = False
 
 CONF_EMAIL = 'email'
 CONF_PASSWORD = 'password'
@@ -26,7 +28,9 @@ CONF_PASSWORD = 'password'
 CONF_USAGE_DAYS = 'usage_days'
 CONF_USAGE = 'usage'
 CONF_PRICES = 'prices'
+CONF_SHOW_HOURLY = 'show_hourly'
 CONF_DATE_FORMAT = 'date_format'
+CONF_TIME_FORMAT = 'time_format'
 
 MONITORED_CONDITIONS_DEFAULT = [
     'is_retail_customer',
@@ -48,6 +52,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_PRICES): cv.boolean,
     vol.Optional(CONF_USAGE_DAYS): cv.positive_int,
     vol.Optional(CONF_DATE_FORMAT): cv.string,
+    vol.Optional(CONF_TIME_FORMAT): cv.string,
+    vol.Optional(CONF_SHOW_HOURLY): cv.boolean,
 })
 
 SCAN_INTERVAL = timedelta(minutes=60)
@@ -61,6 +67,9 @@ async def async_setup_platform(hass, config, async_add_entities,
     date_format = config.get(CONF_DATE_FORMAT)
     if date_format is None:
         date_format = DATE_FORMAT_DEFAULT 
+    time_format = config.get(CONF_TIME_FORMAT)
+    if time_format is None:
+        time_format = TIME_FORMAT_DEFAULT 
     show_usage = config.get(CONF_USAGE)
     if show_usage is None:
         show_usage = True
@@ -70,11 +79,14 @@ async def async_setup_platform(hass, config, async_add_entities,
     usage_days = config.get(CONF_USAGE_DAYS)
     if usage_days is None:
         usage_days = USAGE_DAYS_DEFAULT
+    show_hourly = config.get(CONF_SHOW_HOURLY)
+    if show_hourly is None:
+        show_hourly = SHOW_HOURLY_DEFAULT
         
     api = GreenelyAPI(email, password)
     entities = []
     if show_usage:
-        entities.append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, date_format))
+        entities.append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, show_hourly, date_format, time_format))
     if show_prices:
         entities.append(GreenelyPricesSensor(SENSOR_PRICES_NAME, api, date_format))
     async_add_entities(entities, True)
@@ -154,7 +166,7 @@ class GreenelyPricesSensor(Entity):
 class GreenelyUsageSensor(Entity):
     """Representation of a Greenely usage sensor."""
 
-    def __init__(self, name, api, usage_days, date_format):
+    def __init__(self, name, api, usage_days, show_hourly, date_format, time_format):
         """Initialize a Greenely usage sensor."""
         self._name = name
         self._icon = "mdi:power-socket-eu"
@@ -162,7 +174,9 @@ class GreenelyUsageSensor(Entity):
         self._state_attributes = {}
         self._unit_of_measurement = 'kWh'
         self._usage_days = usage_days
+        self._show_hourly = show_hourly
         self._date_format = date_format
+        self._time_format = time_format
         self._api = api
 
     @property
@@ -211,28 +225,28 @@ class GreenelyUsageSensor(Entity):
 
     def make_attribute(self, date, today, response):
         points = response.get('points', None)
+        yesterday = today - timedelta(days = 1)
         daily_usage = 0
         data = {}
+        yesterday_data = []
         for point in points:
-            if (date == today):
-                _LOGGER.error("point " + str(point))
-                for key, value in point.items():
-                    _LOGGER.error("GEBEGG " + str(key) + str(value))
-                
-                pointTimestamp = datetime.fromtimestamp(point['timestamp'])
-                if (pointTimestamp.hour == datetime.now().hour):
-                    usage_now = 0
-                    usage_point = point['usage']
-                    if usage_point != None and usage_point != 0:
-                        usage_now += (usage_point / 1000)
-                    self._state = usage_now
-                    _LOGGER.error('usage: ' + str(usage_now))
             usage = point['usage']
+            if (date == yesterday):
+                daily_data = {}
+                time = datetime.fromtimestamp(point['timestamp'])
+                daily_data['time'] = time.strftime(self._time_format)
+                yesterday_usage = point['usage']
+                daily_data['usage'] = str(yesterday_usage / 1000) if yesterday_usage != 0 and yesterday_usage != None else str(0)
+                yesterday_data.append(daily_data)
             if usage != None and usage != 0:
                 daily_usage += usage
         if daily_usage != 0:
             data['date'] = date.strftime(self._date_format)
             data['usage'] = str(daily_usage / 1000)
+        if (date == yesterday):
+             self._state = data['usage'] if daily_usage != 0 else 0
+             if self._show_hourly:
+                self._state_attributes['hourly'] = yesterday_data
         return data
 
 class GreenelyAPI():

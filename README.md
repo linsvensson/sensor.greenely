@@ -28,10 +28,12 @@ key | type | description
 **platform (Required)** | string | `greenely`
 **email (Required)** | string | Your Greenely username.
 **password (Required)** | string | Your Greenely password.
-**usage (Optional)** | boolean | Creates a sensor showing usage data. Default `true`.
+**usage (Optional)** | boolean | Creates a sensor showing usage data. The state of this sensor is yesterday's total usage. Default `true`.
 **prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
+**show_hourly (Optional)** | boolean | Show yesterday's hourly data. Default `false`.
 **usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
 **date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
+**time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
 
 ## Example
 **Configuration with default settings:**
@@ -50,7 +52,9 @@ sensor:
     password: 1234
     usage: true
     prices: false
+    show_hourly: true
     usage_days: 4
+    time_format: '%H'
     date_format: '%d/%m/%Y'
 ```
 
@@ -120,5 +124,9 @@ sensor:
 ```
 **days**
 ```json
-[{ "date": "Jan 12 2020", "usage": "1.0" }]
+[{ "date": "Jan 12 2020", "usage": "11.0" }]
+```
+**hourly**
+```json
+[{ "time": "10:00", "usage": "1.0" }]
 ```
