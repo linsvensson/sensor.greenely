@@ -29,9 +29,12 @@ key | type | description
 **email (Required)** | string | Your Greenely username.
 **password (Required)** | string | Your Greenely password.
 **usage (Optional)** | boolean | Creates a sensor showing usage data. The state of this sensor is yesterday's total usage. Default `true`.
+**sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
 **prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
 **show_hourly (Optional)** | boolean | Show yesterday's hourly data. Default `false`.
 **usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
+**sold_measure (Optional)** | number | How many months or days of sold data you want to see. Default `2`.
+**sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
 **date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
 **time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
 
@@ -52,8 +55,11 @@ sensor:
     password: 1234
     usage: true
     prices: false
+    sold: true
     show_hourly: true
+    sold_daily: true
     usage_days: 4
+    sold_measure: 6
     time_format: '%H'
     date_format: '%d/%m/%Y'
 ```
@@ -129,4 +135,8 @@ sensor:
 **hourly**
 ```json
 [{ "time": "10:00", "usage": "1.0" }]
+```
+**sold_data**
+```json
+[{ "date": "Jan 12 2020", "usage": "11.0", "is_complete": true }]
 ```
