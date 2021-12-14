@@ -179,7 +179,7 @@ class GreenelyPricesSensor(Entity):
                 price = point[nameOfPriceAttr]
                 if price != None:
                     newPoint = {}
-                    dt_object = datetime.fromtimestamp(point['timestamp'])
+                    dt_object = datetime.utcfromtimestamp(point['timestamp'])
                     newPoint['date'] = dt_object.strftime(self._date_format)
                     newPoint['time'] = dt_object.strftime("%H:%M")
                     newPoint['price'] = str(price / 100)
@@ -256,7 +256,7 @@ class GreenelyUsageSensor(Entity):
             usage = point['usage']
             if (date == yesterday):
                 daily_data = {}
-                time = datetime.fromtimestamp(point['timestamp'])
+                time = datetime.utcfromtimestamp(point['timestamp'])
                 daily_data['time'] = time.strftime(self._time_format)
                 yesterday_usage = point['usage']
                 daily_data['usage'] = str(yesterday_usage / 1000) if yesterday_usage != 0 and yesterday_usage != None else str(0)
@@ -425,7 +425,7 @@ class GreenelyAPI():
             data = result.json()
             self._facility_id = str(data['data']['parameters']['facility_id'])
         else:
-            _LOGGER.error('Failed to fetch facility id %s', response.text)
+            _LOGGER.error('Failed to fetch facility id %s', result.text)
 
     def check_auth(self):
         """Check to see if our jwt is valid."""

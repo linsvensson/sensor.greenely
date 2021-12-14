@@ -65,6 +65,64 @@ sensor:
 ```
 
 ## Lovelace
+**Example chart with [ApexCharts Card](https://github.com/RomRider/apexcharts-card):**
+Use these configurations for the sensor
+```yaml
+show_hourly: true
+time_format: '%Y-%m-%dT%H:%M'
+date_format: '%Y-%m-%d'
+```
+```yaml
+- type: custom:apexcharts-card
+  header:
+    title: Förbrukning/timme & elpris
+    show: true
+  graph_span: 25h
+  span:
+    start: day
+    offset: '-1d'
+  yaxis:
+    - id: first
+      apex_config:
+        tickAmount: 10
+      min: 0
+      max: 2
+    - id: second
+      opposite: true
+      apex_config:
+        tickAmount: 5
+      min: 0
+      decimals: 0
+  apex_config:
+    dataLabels:
+      enabled: false
+    stroke:
+      width: 4
+  series:
+    - entity: sensor.greenely_usage
+      name: Förbrukning
+      yaxis_id: first
+      type: column
+      color: red
+      extend_to_end: false
+      show:
+        legend_value: false
+      data_generator: |
+        return entity.attributes.hourly.map((entry) => {
+          return [new Date(entry.time), entry.usage];
+        }); 
+    - entity: sensor.greenely_prices
+      yaxis_id: second
+      type: line
+      color: blue
+      name: Elpris
+      show:
+        legend_value: false
+      extend_to_end: false
+```
+
+![image](https://user-images.githubusercontent.com/55505550/145798605-c6add66f-d047-4576-9fcf-17e09c133663.png)
+
 **Example usage with [flex-table-card](https://github.com/custom-cards/flex-table-card):**
 ```yaml
 - type: 'custom:flex-table-card'
