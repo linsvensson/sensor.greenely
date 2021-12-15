@@ -112,6 +112,10 @@ date_format: '%Y-%m-%d'
           return [new Date(entry.time), entry.usage];
         }); 
     - entity: sensor.greenely_prices
+      data_generator: |
+          return entity.attributes.previous_day.map((entry) => {
+            return [new Date(entry.date + 'T' + entry.time), entry.price];
+          }); 
       yaxis_id: second
       type: line
       color: blue
@@ -193,7 +197,7 @@ date_format: '%Y-%m-%d'
 You can then for example make a script to trigger it through voice commands to Google Assistant!
 
 ## Data object structures
-**current_day, next_day & current_month**
+**previous_day, current_day, next_day & current_month**
 ```json
 [{ "date": "Jan 18 2020", "time": "13:00", "price": "24.75" }]
 ```

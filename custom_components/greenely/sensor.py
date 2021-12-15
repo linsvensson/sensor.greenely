@@ -155,23 +155,53 @@ class GreenelyPricesSensor(Entity):
         if self._api.check_auth():
             data = self._api.get_data()
             if data:
-                _LOGGER.debug('Fetching daily prices...')
-                if data['current_month']:
-                    value = data['current_month']['value']
-                    self._state =  (value / 100) if value != 0 and value != None else 0
+                value = data['current_month']['value']
+                self._state_attributes['current_month_value'] = (value / 100) if value != 0 and value != None else 0
                 for condition in MONITORED_CONDITIONS_DEFAULT:
                     if condition == 'current_month':
-                        self.make_attribute(condition, data.get(condition, None), 'cost_in_kr')
-                    elif condition == 'current_day' or condition == 'next_day':
-                        self.make_attribute(condition, data.get(condition, None), 'price')
+                        self.make_data_attribute(condition, data.get(condition, None), 'cost_in_kr')
                     elif condition == 'current_price':
-                        self._state_attributes[condition] = str(data.get(condition, None) / 100)
+                        self._state = str(data.get(condition, None) / 100)
                     else:
                         self._state_attributes[condition] = data.get(condition, None)
+            spot_price_data = self._api.get_spot_price()
+            if spot_price_data:
+                _LOGGER.debug('Fetching daily prices...')
+                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                todaysData = []
+                tomorrowsData = []
+                yesterdaysData = []
+                for d in spot_price_data['data']:
+                    timestamp = datetime.utcfromtimestamp(int(d))
+                    if timestamp.date() == today.date():
+                        if spot_price_data['data'][d]['price'] != None:
+                            todaysData.append(self.make_attribute(spot_price_data, d))
+                    elif timestamp.date() == (today.date() + timedelta(days=1)):
+                        if spot_price_data['data'][d]['price'] != None:
+                            tomorrowsData.append(self.make_attribute(spot_price_data, d))
+                    elif timestamp.date() == (today.date() - timedelta(days=1)):
+                        if spot_price_data['data'][d]['price'] != None:
+                            yesterdaysData.append(self.make_attribute(spot_price_data, d))
+                self._state_attributes['current_day'] = todaysData
+                self._state_attributes['next_day'] = tomorrowsData
+                self._state_attributes['previous_day'] = yesterdaysData
         else:
             _LOGGER.error('Unable to log in!')
 
-    def make_attribute(self, name, response, nameOfPriceAttr):
+    def make_attribute(self, response, value):
+        if response: 
+            newPoint = {}
+            price = response['data'][value]['price']
+            dt_object = datetime.strptime(response['data'][value]['localtime'], '%Y-%m-%d %H:%M')
+            newPoint['date'] = dt_object.strftime(self._date_format)
+            newPoint['time'] = dt_object.strftime("%H:%M")
+            if price != None:
+                newPoint['price'] = str(price / 1000)
+            else:
+                newPoint['price'] = 0
+            return newPoint
+
+    def make_data_attribute(self, name, response, nameOfPriceAttr):
         if response: 
             points = response.get('points', None)
             data = []
@@ -353,6 +383,7 @@ class GreenelyAPI():
         self._url_retail = 'https://api2.greenely.com/v2/retail/overview'
         self._url_data = 'https://api2.greenely.com/v3/data/'
         self._url_sold = 'https://api2.greenely.com/v1/facilities/'
+        self._url_spot_price = 'https://api2.greenely.com/v1/facilities/'
         self._url_facilities = 'https://api2.greenely.com/v1/facilities/primary?includes=retail_state&includes=consumption_limits&includes=parameters'
         self._headers = {'Accept-Language':'sv-SE', 
             'User-Agent':'Android 2 111',
@@ -369,6 +400,23 @@ class GreenelyAPI():
         if response.status_code == requests.codes.ok:
             data = response.json()
             return data['data']
+        else:
+            _LOGGER.error('Failed to get price data, %s', response.text)
+            return data
+
+    def get_spot_price(self):
+        """Get the spot price data from the Greenely API."""
+        today = datetime.today()
+        yesterday = today - timedelta(days = 1)
+        tomorrow = today + timedelta(days = 2)
+        start = "?from=" + str(yesterday.year) + "-" + yesterday.strftime("%m") + "-" + yesterday.strftime("%d")
+        end = "&to=" + str(tomorrow.year) + "-" + tomorrow.strftime("%m") + "-" + tomorrow.strftime("%d")
+        url = self._url_spot_price + self._facility_id + "/spot-price" + start + end + "&resolution=hourly"
+        response = requests.get(url, headers = self._headers)
+        data = {}
+        if response.status_code == requests.codes.ok:
+            data = response.json()
+            return data
         else:
             _LOGGER.error('Failed to get price data, %s', response.text)
             return data
