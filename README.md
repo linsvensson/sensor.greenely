@@ -77,7 +77,7 @@ date_format: '%Y-%m-%d'
   header:
     title: Förbrukning/timme & elpris
     show: true
-  graph_span: 25h
+  graph_span: 24h
   span:
     start: day
     offset: '-1d'
