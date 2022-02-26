@@ -155,7 +155,7 @@ class GreenelyPricesSensor(Entity):
         if self._api.check_auth():
             data = self._api.get_data()
             if data:
-                value = data['current_month']['value']
+                value = data['current_month']['value'] if data['current_month'] else 0
                 self._state_attributes['current_month_value'] = (value / 100) if value != 0 and value != None else 0
                 for condition in MONITORED_CONDITIONS_DEFAULT:
                     if condition == 'current_month':
