@@ -32,6 +32,7 @@ key | type | description
 **sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
 **prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
 **show_hourly (Optional)** | boolean | Show yesterday's hourly data. Default `false`.
+**hourly_offset_days (Optional)** | number | How many days ago you want the hourly data from. Can't be greater than **usage_days** Default `1` (yesterday's data).
 **usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
 **sold_measure (Optional)** | number | How many months or days of sold data you want to see. Default `2`.
 **sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
@@ -59,6 +60,7 @@ sensor:
     show_hourly: true
     sold_daily: true
     usage_days: 4
+    hourly_offset_days: 2
     sold_measure: 6
     time_format: '%H'
     date_format: '%d/%m/%Y'
