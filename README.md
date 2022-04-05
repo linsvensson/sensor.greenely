@@ -23,7 +23,8 @@ custom_components/greenely/manifest.json
 ```
 
 ## Configuration
-Add the sensor `- platform: greenely` to your HA configuration.
+Add the sensor `- platform: greenely` to your HA configuration.   
+    
 **Configuration with default settings:**
 ```yaml
 sensor:
@@ -31,7 +32,7 @@ sensor:
     email: test@gmail.com
     password: 1234
 ```
-
+    
 **Configuration with custom settings:**
 ```yaml
 sensor:
