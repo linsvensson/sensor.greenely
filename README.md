@@ -7,12 +7,12 @@ Because Greenely doesn't have an open api yet, we are using the Android user-age
 Data is fetched every hour.
 
 ## Installation
+### Manual
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `greenely`.
 4. Download _all_ the files from the `custom_components/greenely/` directory (folder) in this repository.
 5. Place the files you downloaded in the new directory (folder) you created.
-6. Add a sensor `- platform: greenely` to your HA configuration.
 
 Using your HA configuration directory (folder) as a starting point you should now also have this:
 
@@ -23,23 +23,7 @@ custom_components/greenely/manifest.json
 ```
 
 ## Configuration
-key | type | description
-:--- | :--- | :---
-**platform (Required)** | string | `greenely`
-**email (Required)** | string | Your Greenely username.
-**password (Required)** | string | Your Greenely password.
-**usage (Optional)** | boolean | Creates a sensor showing usage data. The state of this sensor is yesterday's total usage. Default `true`.
-**sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
-**prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
-**show_hourly (Optional)** | boolean | Show yesterday's hourly data. Default `false`.
-**hourly_offset_days (Optional)** | number | How many days ago you want the hourly data from. Can't be greater than **usage_days** Default `1` (yesterday's data).
-**usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
-**sold_measure (Optional)** | number | How many months or days of sold data you want to see. Default `2`.
-**sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
-**date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
-**time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
-
-## Example
+Add the sensor `- platform: greenely` to your HA configuration.
 **Configuration with default settings:**
 ```yaml
 sensor:
@@ -65,6 +49,23 @@ sensor:
     time_format: '%H'
     date_format: '%d/%m/%Y'
 ```
+
+### Configuration variables
+key | type | description
+:--- | :--- | :---
+**platform (Required)** | string | `greenely`
+**email (Required)** | string | Your Greenely username.
+**password (Required)** | string | Your Greenely password.
+**usage (Optional)** | boolean | Creates a sensor showing usage data. The state of this sensor is yesterday's total usage. Default `true`.
+**sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
+**prices (Optional)** | boolean | Creates a sensor showing price data. Default `true`.
+**show_hourly (Optional)** | boolean | Show yesterday's hourly data. Default `false`.
+**hourly_offset_days (Optional)** | number | How many days ago you want the hourly data from. Can't be greater than **usage_days** Default `1` (yesterday's data).
+**usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
+**sold_measure (Optional)** | number | How many months or days of sold data you want to see. Default `2`.
+**sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
+**date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
+**time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
 
 ## Lovelace
 **Example chart with [ApexCharts Card](https://github.com/RomRider/apexcharts-card):**
