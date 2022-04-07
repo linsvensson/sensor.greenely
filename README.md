@@ -187,7 +187,7 @@ date_format: '%Y-%m-%d'
               icon: mdi:cash
 ```
 
-![image](https://user-images.githubusercontent.com/5594088/72912188-8e6b8f80-3d3b-11ea-8072-096571fecd41.PNG)
+![image](https://user-images.githubusercontent.com/5594088/162276616-148f44da-99a5-4108-be0e-ef324466ec8d.PNG)
 
 **Example usage with [Node-Red Companion](https://github.com/zachowj/hass-node-red) and tts**
 ![image](https://user-images.githubusercontent.com/5594088/116883602-140c0980-ac26-11eb-843c-409604e4b93e.png)
@@ -199,6 +199,14 @@ date_format: '%Y-%m-%d'
 </details>
 
 You can then for example make a script to trigger it through voice commands to Google Assistant!
+
+## Debug logging
+Add this to your configuration.yaml to debug the component
+```logger:
+  default: warning
+  logs:
+    custom_components.greenely: debug
+```  
 
 ## Data object structures
 **previous_day, current_day, next_day & current_month**
