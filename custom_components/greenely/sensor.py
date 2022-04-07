@@ -2,122 +2,65 @@
 import logging
 from datetime import datetime, timedelta
 
-import requests
-import voluptuous as vol
-
-import homeassistant.helpers.config_validation as cv
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.helpers.entity import Entity
 
-__version__ = '1.0.0'
+from .const import (DOMAIN,
+    API,
+    CONFIG,
+    CONF_DATA,
+    SENSOR_USAGE_NAME,
+    SENSOR_SOLD_NAME,
+    SENSOR_PRICES_NAME,
+    MONITORED_CONDITIONS_DEFAULT,
+    CONF_DATE_FORMAT, 
+    CONF_TIME_FORMAT, 
+    CONF_USAGE_DAYS,
+    CONF_SOLD_MEASURE, 
+    CONF_SHOW_HOURLY, 
+    CONF_SOLD_DAILY, 
+    CONF_HOURLY_OFFSET_DAYS,
+    DATA_PRICES,
+    DATA_USAGE,
+    DATA_SOLD,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-SENSOR_USAGE_NAME = 'Greenely Usage'
-SENSOR_SOLD_NAME = 'Greenely Sold'
-SENSOR_PRICES_NAME = 'Greenely Prices'
-
-DATE_FORMAT_DEFAULT = '%b %d %Y'
-TIME_FORMAT_DEFAULT = '%H:%M'
-USAGE_DAYS_DEFAULT = 10
-SOLD_MEASURE_DEFAULT = 2
-SHOW_HOURLY_DEFAULT = False
-SOLD_DAILY_DEFAULT = False
-HOURLY_OFFSET_DAYS_DEFAULT = 1
-
-CONF_EMAIL = 'email'
-CONF_PASSWORD = 'password'
-
-CONF_USAGE_DAYS = 'usage_days'
-CONF_USAGE = 'usage'
-CONF_SOLD = 'sold'
-CONF_SOLD_MEASURE = 'sold_measure'
-CONF_SOLD_DAILY = 'sold_daily'
-CONF_PRICES = 'prices'
-CONF_SHOW_HOURLY = 'show_hourly'
-CONF_DATE_FORMAT = 'date_format'
-CONF_TIME_FORMAT = 'time_format'
-CONF_HOURLY_OFFSET_DAYS = 'hourly_offset_days'
-
-MONITORED_CONDITIONS_DEFAULT = [
-    'is_retail_customer',
-    'current_price',
-    'referral_discount_in_kr',
-    'has_unpaid_invoices',
-    'yearly_savings_in_kr',
-    'timezone',
-    'retail_termination_date',
-    'current_day',
-    'next_day',
-    'current_month'
-]
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_EMAIL): cv.string,
-    vol.Required(CONF_PASSWORD): cv.string,
-    vol.Optional(CONF_USAGE): cv.boolean,
-    vol.Optional(CONF_SOLD): cv.boolean,
-    vol.Optional(CONF_PRICES): cv.boolean,
-    vol.Optional(CONF_USAGE_DAYS): cv.positive_int,
-    vol.Optional(CONF_SOLD_MEASURE): cv.positive_int,
-    vol.Optional(CONF_SOLD_DAILY): cv.boolean,
-    vol.Optional(CONF_DATE_FORMAT): cv.string,
-    vol.Optional(CONF_TIME_FORMAT): cv.string,
-    vol.Optional(CONF_SHOW_HOURLY): cv.boolean,
-    vol.Optional(CONF_HOURLY_OFFSET_DAYS): cv.positive_int,
-})
-
-SCAN_INTERVAL = timedelta(minutes=60)
-
 async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
-    """Set up the Greenely sensor."""
-    email = config.get(CONF_EMAIL)
-    password = config.get(CONF_PASSWORD)
-    
-    date_format = config.get(CONF_DATE_FORMAT)
-    if date_format is None:
-        date_format = DATE_FORMAT_DEFAULT 
-    time_format = config.get(CONF_TIME_FORMAT)
-    if time_format is None:
-        time_format = TIME_FORMAT_DEFAULT 
-    show_usage = config.get(CONF_USAGE)
-    if show_usage is None:
-        show_usage = True
-    show_sold = config.get(CONF_SOLD)
-    if show_sold is None:
-        show_sold = False
-    show_prices = config.get(CONF_PRICES)
-    if show_prices is None:
-        show_prices = True
-    usage_days = config.get(CONF_USAGE_DAYS)
-    if usage_days is None:
-        usage_days = USAGE_DAYS_DEFAULT
-    sold_measure = config.get(CONF_SOLD_MEASURE)
-    if sold_measure is None:
-        sold_measure = SOLD_MEASURE_DEFAULT
-    show_hourly = config.get(CONF_SHOW_HOURLY)
-    if show_hourly is None:
-        show_hourly = SHOW_HOURLY_DEFAULT
-    sold_daily = config.get(CONF_SOLD_DAILY)
-    if sold_daily is None:
-        sold_daily = SOLD_DAILY_DEFAULT
-    hourly_offset_days = config.get(CONF_HOURLY_OFFSET_DAYS)
-    if hourly_offset_days is None:
-        hourly_offset_days = HOURLY_OFFSET_DAYS_DEFAULT
+    """Setup the platform using yaml."""
+    if discovery_info is None:
+        return
+
+    api = hass.data[DOMAIN][API]
+    conf = hass.data[DOMAIN][CONFIG]
+
+    date_format = conf.get(CONF_DATE_FORMAT)
+    time_format = conf.get(CONF_TIME_FORMAT)
+    show_sold = True if DATA_SOLD in conf.get(CONF_DATA) else False
+    show_usage = True if DATA_USAGE in conf.get(CONF_DATA) else False
+    show_prices = True if DATA_PRICES in conf.get(CONF_DATA) else False
+    usage_days = conf.get(CONF_USAGE_DAYS)
+    sold_measure = conf.get(CONF_SOLD_MEASURE)
+    show_hourly = conf.get(CONF_SHOW_HOURLY)
+    sold_daily = conf.get(CONF_SOLD_DAILY)
+    hourly_offset_days = conf.get(CONF_HOURLY_OFFSET_DAYS)
     if hourly_offset_days > usage_days:
-        hourly_offset_days = HOURLY_OFFSET_DAYS_DEFAULT
+        hourly_offset_days = usage_days
+
+    _LOGGER.debug('Setting up sensor(s)...')
         
-    api = GreenelyAPI(email, password)
-    entities = []
+    sensors = []
     if show_usage:
-        entities.append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, show_hourly, hourly_offset_days, date_format, time_format))
+        sensors.append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, show_hourly, hourly_offset_days, date_format, time_format))
     if show_sold:
-        entities.append(GreenelySoldSensor(SENSOR_SOLD_NAME, api, sold_measure, sold_daily, date_format))
+        sensors.append(GreenelySoldSensor(SENSOR_SOLD_NAME, api, sold_measure, sold_daily, date_format))
     if show_prices:
-        entities.append(GreenelyPricesSensor(SENSOR_PRICES_NAME, api, date_format))
-    async_add_entities(entities, True)
+        sensors.append(GreenelyPricesSensor(SENSOR_PRICES_NAME, api, date_format))
+        
+    async_add_entities(sensors, True)
+
+    return True
 
 class GreenelyPricesSensor(Entity):
     """Representation of a Greenely sensor."""
@@ -379,135 +322,3 @@ class GreenelySoldSensor(Entity):
                 months.append(data)
         self._state = str(total_sold / 1000) if total_sold != 0 else 0
         self._state_attributes['sold_data'] = months
-
-class GreenelyAPI():
-    """Greenely API."""
-
-    def __init__(self, email, password):
-        """Initialize Greenely API."""
-        self._jwt = ''
-        self._url_check_auth = 'https://api2.greenely.com/v1/checkauth'
-        self._url_login = 'https://api2.greenely.com/v1/login'
-        self._url_retail = 'https://api2.greenely.com/v2/retail/overview'
-        self._url_data = 'https://api2.greenely.com/v3/data/'
-        self._url_sold = 'https://api2.greenely.com/v1/facilities/'
-        self._url_spot_price = 'https://api2.greenely.com/v1/facilities/'
-        self._url_facilities = 'https://api2.greenely.com/v1/facilities/primary?includes=retail_state&includes=consumption_limits&includes=parameters'
-        self._headers = {'Accept-Language':'sv-SE', 
-            'User-Agent':'Android 2 111',
-            'Content-Type': 'application/json; charset=utf-8',
-            'Authorization':self._jwt}    
-        self._email = email
-        self._password = password
-        self._facility_id = ''
-
-    def get_data(self):
-        """Get the price data from the Greenely API."""
-        response = requests.get(self._url_retail, headers = self._headers)
-        data = {}
-        if response.status_code == requests.codes.ok:
-            data = response.json()
-            return data['data']
-        else:
-            _LOGGER.error('Failed to get price data, %s', response.text)
-            return data
-
-    def get_spot_price(self):
-        """Get the spot price data from the Greenely API."""
-        today = datetime.today()
-        yesterday = today - timedelta(days = 1)
-        tomorrow = today + timedelta(days = 2)
-        start = "?from=" + str(yesterday.year) + "-" + yesterday.strftime("%m") + "-" + yesterday.strftime("%d")
-        end = "&to=" + str(tomorrow.year) + "-" + tomorrow.strftime("%m") + "-" + tomorrow.strftime("%d")
-        url = self._url_spot_price + self._facility_id + "/spot-price" + start + end + "&resolution=hourly"
-        response = requests.get(url, headers = self._headers)
-        data = {}
-        if response.status_code == requests.codes.ok:
-            data = response.json()
-            return data
-        else:
-            _LOGGER.error('Failed to get price data, %s', response.text)
-            return data
-            
-    def get_usage(self, year, month, day):
-        """Get usage data from the Greenely API."""
-        url = self._url_data + year + "/" + month + "/" + day + "/usage"
-        response = requests.get(url, headers = self._headers)
-        data = {}
-        if response.status_code == requests.codes.ok:
-            data = response.json()
-            return data['data']
-        else:
-            _LOGGER.error('Failed to fetch usage data for %s/%s/%s, %s', year, month, day, response.text)
-            return data
-
-    def get_sold(self, sold_measure, sold_daily):
-        """Get sold data from the Greenely API."""
-        today = datetime.today()
-        if sold_daily == False:
-            resolution = "&resolution=monthly"
-            first_month = today
-            if today.month == 1:
-                first_month = today.replace(year=today.year - 1, month=12)
-            else:
-                extra_days = 0
-            while True:
-                try:
-                    first_month = today.replace(month=today.month - (sold_measure -1), day=today.day - extra_days)
-                    break
-                except ValueError:
-                    extra_days += 1
-            start = "from=" + str(first_month.year) + "-" + first_month.strftime("%m") + "-" + first_month.strftime("%d")
-        else:
-            resolution = "&resolution=daily"
-            first_date = today - timedelta(days = sold_measure)
-            start = "from=" + str(first_date.year) + "-" + first_date.strftime("%m") + "-" + first_date.strftime("%d")
-        end = "&to=" + str(today.year) + "-" + today.strftime("%m") + "-" + today.strftime("%d")
-        url = self._url_sold + self._facility_id + "/sold-electricity?" + start + end + resolution
-        response = requests.get(url, headers = self._headers)
-        data = {}
-        if response.status_code == requests.codes.ok:
-            data = response.json()
-            return data['data']
-        else:
-            _LOGGER.error('Failed to fetch sold data from %s, %s', first_month.strftime("%d/%m/%Y"), response.text)
-            return data
-
-    def get_facility_id(self):
-        """Get the facility id."""
-        result = requests.get(self._url_facilities, headers = self._headers)
-        if result.status_code == requests.codes.ok:
-            _LOGGER.debug('jwt is valid!')
-            data = result.json()
-            self._facility_id = str(data['data']['parameters']['facility_id'])
-        else:
-            _LOGGER.error('Failed to fetch facility id %s', result.text)
-
-    def check_auth(self):
-        """Check to see if our jwt is valid."""
-        result = requests.get(self._url_check_auth, headers = self._headers)
-        if result.status_code == requests.codes.ok:
-            _LOGGER.debug('jwt is valid!')
-            return True
-        else: 
-            if self.login() == False:
-                _LOGGER.debug(result.text)
-                return False
-        return True
-        
-    def login(self):
-        """Login to the Greenely API."""
-        result = False
-        loginInfo = {'email':self._email, 
-            'password':self._password} 
-        loginResult = requests.post(self._url_login, headers = self._headers, data = json.dumps(loginInfo))
-        if loginResult.status_code == requests.codes.ok:
-            jsonResult = loginResult.json()
-            self._jwt = "JWT " + jsonResult['jwt']
-            self._headers['Authorization'] = self._jwt
-            _LOGGER.debug('Successfully logged in and updated jwt')
-            self.get_facility_id()
-            result = True           
-        else:
-            _LOGGER.error(loginResult.text)
-        return result

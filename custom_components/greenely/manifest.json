@@ -1,10 +1,10 @@
 {
   "domain": "greenely",
   "name": "Greenely Sensor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "documentation": "https://github.com/linsvensson/sensor.greenely",
   "issue_tracker": "https://github.com/linsvensson/sensor.greenely/issues",
   "codeowners": ["@linsvensson"],
-  "requirements": [],
+  "requirements": ["requests"],
   "dependencies": []
 }
