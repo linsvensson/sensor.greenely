@@ -1,4 +1,5 @@
-﻿from datetime import datetime, timedelta
+"""Greenely sensors"""
+from datetime import datetime, timedelta
 
 import requests
 import json
