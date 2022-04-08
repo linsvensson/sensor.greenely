@@ -6,5 +6,6 @@
   "issue_tracker": "https://github.com/linsvensson/sensor.greenely/issues",
   "codeowners": ["@linsvensson"],
   "requirements": [],
+  "iot_class": "cloud_polling",
   "dependencies": []
 }
