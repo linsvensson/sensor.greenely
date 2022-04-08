@@ -1,5 +1,8 @@
 # sensor.greenely
-[![GitHub last commit](https://img.shields.io/github/last-commit/linsvensson/sensor.greenely)](https://github.com/linsvensson/sensor.greenely)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/linsvensson/sensor.greenely?color=pink&style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/linsvensson/sensor.greenely?color=pink&style=for-the-badge)    
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?color=pink&style=for-the-badge)](https://github.com/hacs/integration)
 
 _Custom component to get usage data and prices from [Greenely](https://www.greenely.se/) for [Home Assistant](https://www.home-assistant.io/)._
 
@@ -7,20 +10,13 @@ Because Greenely doesn't have an open api yet, we are using the Android user-age
 Data is fetched every hour.
 
 ## Installation
+### Install with HACS (recommended)
+- Add the url to the repository as a custom integration.
+
 ### Manual
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `greenely`.
-4. Download _all_ the files from the `custom_components/greenely/` directory (folder) in this repository.
-5. Place the files you downloaded in the new directory (folder) you created.
-
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/greenely/__init__.py
-custom_components/greenely/sensor.py
-custom_components/greenely/manifest.json
-```
+- Copy directory `custom_components/greenely` to your `<config dir>/custom_components` directory.
+- Configure with config below.
+- Restart Home-Assistant.
 
 ## Configuration
 Add the sensor `- platform: greenely` to your HA configuration.   
