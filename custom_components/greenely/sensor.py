@@ -1,4 +1,4 @@
-﻿"""Greenely sensors"""
+"""Greenely sensors"""
 from datetime import datetime, timedelta
 
 import logging
