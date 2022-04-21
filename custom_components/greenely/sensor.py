@@ -82,7 +82,7 @@ async def async_setup_platform(hass, config, async_add_entities,
 
     _LOGGER.debug('Setting up sensor(s)...')
 
-    sensors  = []
+    sensors = []
     if show_usage:
         sensors .append(GreenelyUsageSensor(SENSOR_USAGE_NAME, api, usage_days, show_hourly, hourly_offset_days, date_format, time_format))
     if show_sold:
@@ -149,7 +149,7 @@ class GreenelyPricesSensor(Entity):
                 tomorrowsData = []
                 yesterdaysData = []
                 for d in spot_price_data['data']:
-                    timestamp = datetime.utcfromtimestamp(int(d))
+                    timestamp = datetime.strptime(spot_price_data['data'][d]['localtime'], '%Y-%m-%d %H:%M')
                     if timestamp.date() == today.date():
                         if spot_price_data['data'][d]['price'] != None:
                             todaysData.append(self.make_attribute(spot_price_data, d))
