@@ -290,7 +290,7 @@ class GreenelyDailyUsageSensor(Entity):
                 daily_data['localtime'] = dateTime.strftime(self._date_format)
                 usage = response[k]['usage']
                 if (dateTime == yesterday):
-                    self._state = usage / 1000 if usage != 0 else 0
+                    self._state = usage / 1000 if usage != None else 0
                 daily_data['usage'] = (usage / 1000) if usage != None else 0
                 data.append(daily_data)
         return data
@@ -370,7 +370,7 @@ class GreenelyHourlyUsageSensor(Entity):
                         and dateTime.day == yesterday.day
                         and dateTime.month == yesterday.month
                         and dateTime.year == yesterday.year):
-                    self._state = usage / 1000 if usage != 0 else 0
+                    self._state = usage / 1000 if usage != None else 0
                 hourly_data['usage'] = (usage / 1000) if usage != None else 0
                 data.append(hourly_data)
         return data

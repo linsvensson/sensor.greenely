@@ -47,7 +47,7 @@ sensor:
     sold: true
     sold_daily: true
     sold_measure: 6
-    time_format: '%H'
+    time_format: '%H:%M'
     date_format: '%d/%m/%Y'
 ```
 
