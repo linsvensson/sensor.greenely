@@ -115,7 +115,7 @@ class GreenelyPricesSensor(Entity):
         self._icon = "mdi:account-cash"
         self._state = 0
         self._state_attributes = {}
-        self._unit_of_measurement = 'kr'
+        self._unit_of_measurement = 'SEK/kWh'
         self._date_format = date_format
         self._time_format = time_format
         self._api = api
