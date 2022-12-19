@@ -16,7 +16,7 @@ from .const import (DOMAIN, SENSOR_DAILY_USAGE_NAME, SENSOR_HOURLY_USAGE_NAME,
                     SENSOR_SOLD_NAME, SENSOR_PRICES_NAME, CONF_HOURLY_USAGE,
                     CONF_DAILY_USAGE, CONF_SOLD, CONF_PRICES, CONF_DATE_FORMAT,
                     CONF_TIME_FORMAT, CONF_USAGE_DAYS, CONF_SOLD_MEASURE,
-                    CONF_SOLD_DAILY, CONF_HOURLY_OFFSET_DAYS, CONF_FACILITY_ID)
+                    CONF_SOLD_DAILY, CONF_HOURLY_OFFSET_DAYS, CONF_FACILITY_ID, CONF_HOMEKIT_COMPATIBLE)
 
 NAME = DOMAIN
 ISSUEURL = "https://github.com/linsvensson/sensor.greenely/issues"
@@ -59,6 +59,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     cv.positive_int,
     vol.Optional(CONF_FACILITY_ID, default='primary'):
     cv.string,
+    vol.Optional(CONF_HOMEKIT_COMPATIBLE, default=False):
+    cv.boolean,
 })
 
 SCAN_INTERVAL = timedelta(minutes=60)
@@ -82,6 +84,7 @@ async def async_setup_platform(hass,
     sold_daily = config.get(CONF_SOLD_DAILY)
     hourly_offset_days = config.get(CONF_HOURLY_OFFSET_DAYS)
     facility_id = config.get(CONF_FACILITY_ID)
+    homekit_compatible = config.get(CONF_HOMEKIT_COMPATIBLE)
 
     api = GreenelyApi(email, password, facility_id)
 
@@ -104,20 +107,21 @@ async def async_setup_platform(hass,
     if show_prices:
         sensors.append(
             GreenelyPricesSensor(SENSOR_PRICES_NAME, api, date_format,
-                                 time_format))
+                                 time_format, homekit_compatible))
     async_add_entities(sensors, True)
 
 
 class GreenelyPricesSensor(Entity):
 
-    def __init__(self, name, api, date_format, time_format):
+    def __init__(self, name, api, date_format, time_format, homekit_compatible):
         self._name = name
         self._icon = "mdi:account-cash"
         self._state = 0
         self._state_attributes = {}
-        self._unit_of_measurement = 'kr'
+        self._unit_of_measurement = 'kr' if homekit_compatible != True else '°C'
         self._date_format = date_format
         self._time_format = time_format
+        self._homekit_compatible = homekit_compatible
         self._api = api
 
     @property
@@ -198,13 +202,19 @@ class GreenelyPricesSensor(Entity):
             newPoint['date'] = dt_object.strftime(self._date_format)
             newPoint['time'] = dt_object.strftime(self._time_format)
             if price != None:
-                rounded = round(((price / 1000) / 100), 4)
+                rounded = self.format_price(price)
                 newPoint['price'] = rounded
                 if dt_object.hour == today.hour and dt_object.day == today.day:
                     self._state = rounded
             else:
                 newPoint['price'] = 0
             return newPoint
+
+    def format_price(self, price):
+        if self._homekit_compatible == True:
+            return round(price / 1000)
+        else:
+             return round(((price / 1000) / 100), 4)
 
     def make_data_attribute(self, name, response, nameOfPriceAttr):
         if response:

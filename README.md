@@ -49,6 +49,7 @@ sensor:
     sold_measure: 6
     time_format: '%H:%M'
     date_format: '%d/%m/%Y'
+    homekit_compatible: true
 ```
 
 ### Configuration variables
@@ -57,7 +58,7 @@ key | type | description
 **platform (Required)** | string | `greenely`
 **email (Required)** | string | Your Greenely username.
 **password (Required)** | string | Your Greenely password.
-**facility_id (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here. Default `primary`.
+**facility_id (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility id's can be found eg. by installing Android Studio and in a Play Store enabled device emulator (indicated by the Play Icon) install the Greenely app. Run app, login with your Greenely credentials, and use Logcat in Android Studio, filtered on Greenely to find the facility ID. In the app, switch between the registered facilities to find out the different facility IDs. Or, if you use Postman, import [this](https://www.dropbox.com/s/jmoo24tikbre4ep/greenely%20test.postman_collection.json?dl=0) and send login and then facilities.   Default `primary`.
 **daily_usage (Optional)** | boolean | Creates a sensor showing daily usage data. The state of this sensor is yesterday's total usage. Default `true`.
 **hourly_usage (Optional)** | boolean | Creates a sensor showing yesterday's hourly usage data. Default `false`.
 **sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
@@ -68,6 +69,7 @@ key | type | description
 **sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
 **date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
 **time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
+**homekit_compatible (Optional)** | boolean | If you're using Homekit and need the current price data in the format `x.x °C`, enable this. Default `false`.
 
 ## Lovelace
 **Example chart with [ApexCharts Card](https://github.com/RomRider/apexcharts-card):**
