@@ -118,7 +118,7 @@ class GreenelyPricesSensor(Entity):
         self._icon = "mdi:account-cash"
         self._state = 0
         self._state_attributes = {}
-        self._unit_of_measurement = 'kr' if homekit_compatible != True else '°C'
+        self._unit_of_measurement = 'SEK/kWh' if homekit_compatible != True else '°C'
         self._date_format = date_format
         self._time_format = time_format
         self._homekit_compatible = homekit_compatible
@@ -238,12 +238,13 @@ class GreenelyDailyUsageSensor(Entity):
         self._name = name
         self._icon = "mdi:power-socket-eu"
         self._state = 0
-        self._state_attributes = {}
+        self._state_attributes = {'state_class':'measurement','last_reset':'1970-01-01T00:00:00+00:00'}
         self._unit_of_measurement = 'kWh'
         self._usage_days = usage_days
         self._date_format = date_format
         self._time_format = time_format
         self._api = api
+        self._device_class = 'energy'
 
     @property
     def name(self):
@@ -269,6 +270,11 @@ class GreenelyDailyUsageSensor(Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return self._unit_of_measurement
+
+    @property
+    def device_class(self):
+        """Return the class of the sensor."""
+        return self._device_class
 
     def update(self):
         _LOGGER.debug('Checking jwt validity...')
@@ -313,12 +319,13 @@ class GreenelyHourlyUsageSensor(Entity):
         self._name = name
         self._icon = "mdi:power-socket-eu"
         self._state = 0
-        self._state_attributes = {}
+        self._state_attributes = {'state_class':'measurement','last_reset':'1970-01-01T00:00:00+00:00'}
         self._unit_of_measurement = 'kWh'
         self._date_format = date_format
         self._time_format = time_format
         self._hourly_offset_days = hourly_offset_days
         self._api = api
+        self._device_class = 'energy'
 
     @property
     def name(self):
@@ -344,6 +351,11 @@ class GreenelyHourlyUsageSensor(Entity):
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return self._unit_of_measurement
+
+    @property
+    def device_class(self):
+        """Return the class of the sensor."""
+        return self._device_class
 
     def update(self):
         _LOGGER.debug('Checking jwt validity...')
