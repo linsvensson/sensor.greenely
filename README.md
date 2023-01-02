@@ -141,7 +141,7 @@ date_format: '%Y-%m-%d'
   columns:
     - name: date
       attr_as_list: data
-      modify: x.date
+      modify: x.localtime
       icon: mdi:calendar
     - name: kWh
       attr_as_list: data
