@@ -154,10 +154,13 @@ class GreenelyPricesSensor(Entity):
         _LOGGER.debug('Checking jwt validity...')
         if self._api.check_auth():
             data = self._api.get_price_data()
+            totalCost = 0
             if data:
-                firstKey = next(iter(data))
-                value = data[firstKey]['cost_in_kr'] if data[firstKey] else 0
-                self._state_attributes['current_month'] = value
+                for d, value in data.items():
+                    cost = value['cost']
+                    if cost != None:
+                        totalCost += cost
+                self._state_attributes['current_month'] = round(totalCost / 100000)
             spot_price_data = self._api.get_spot_price()
             if spot_price_data:
                 _LOGGER.debug('Fetching daily prices...')

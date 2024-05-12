@@ -27,7 +27,7 @@ class GreenelyApi:
         start = "?from=" + str(today.year) + "-" + today.strftime("%m") + "-01"
         endOfMonth = calendar.monthrange(today.year, today.month)[1]
         end = "&to=" + str(today.year) + "-" + today.strftime("%m") + "-" + str(endOfMonth);
-        url = self._url_facilities_base + self._facility_id + '/consumption-cost' + start + end + "&resolution=monthly&prediction=false&exclude_additions=false&exclude_monthly_fee=false&exclude_vat=false"
+        url = self._url_facilities_base + self._facility_id + '/consumption' + start + end + "&resolution=daily&unit=currency&operation=sum"
         response = requests.get(url, headers = self._headers)
         data = {}
         if response.status_code == requests.codes.ok:
