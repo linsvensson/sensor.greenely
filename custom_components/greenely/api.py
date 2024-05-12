@@ -1,7 +1,6 @@
 """Greenely API"""
 import logging
 from datetime import datetime, timedelta
-import calendar
 import requests
 import json
 
@@ -24,9 +23,9 @@ class GreenelyApi:
 
     def get_price_data(self):
         today = datetime.today()
+        nextMonth = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
         start = "?from=" + str(today.year) + "-" + today.strftime("%m") + "-01"
-        endOfMonth = calendar.monthrange(today.year, today.month)[1]
-        end = "&to=" + str(today.year) + "-" + today.strftime("%m") + "-" + str(endOfMonth);
+        end = "&to=" + str(nextMonth.year) + "-" + nextMonth.strftime("%m") + "-01"
         url = self._url_facilities_base + self._facility_id + '/consumption' + start + end + "&resolution=daily&unit=currency&operation=sum"
         response = requests.get(url, headers = self._headers)
         data = {}
@@ -68,13 +67,17 @@ class GreenelyApi:
             return data
         
     def get_facility_id(self):
-        result = requests.get(self._url_facilities_base + 'primary?includes=retail_state&includes=consumption_limits&includes=parameters', headers = self._headers)
+        result = requests.get(self._url_facilities_base, headers = self._headers)
         if result.status_code == requests.codes.ok:
             data = result.json()
+            facility = next((f for f in data if f['is_primary'] == True), None)
+            if facility == None:
+                _LOGGER.debug('Found no primary facility, using the first one in the list!')
+                facility = data[0]
             self._facility_id = str(data['data']['parameters']['facility_id'])
             _LOGGER.debug('Fetched facility id %s', self._facility_id)
         else:
-            _LOGGER.error('Failed to fetch facility id %s', result.text)
+            _LOGGER.error('Failed to fetch facility id %s', result.reason)
 
     def check_auth(self):
         """Check to see if our jwt is valid."""
