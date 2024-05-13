@@ -69,12 +69,12 @@ class GreenelyApi:
     def get_facility_id(self):
         result = requests.get(self._url_facilities_base, headers = self._headers)
         if result.status_code == requests.codes.ok:
-            data = result.json()
+            data = result.json()['data']
             facility = next((f for f in data if f['is_primary'] == True), None)
             if facility == None:
                 _LOGGER.debug('Found no primary facility, using the first one in the list!')
                 facility = data[0]
-            self._facility_id = str(data['data']['parameters']['facility_id'])
+            self._facility_id = str(data[0]['id'])
             _LOGGER.debug('Fetched facility id %s', self._facility_id)
         else:
             _LOGGER.error('Failed to fetch facility id %s', result.reason)
