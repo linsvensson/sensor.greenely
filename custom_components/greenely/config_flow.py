@@ -44,15 +44,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 
-class PlaceholderHub:
-    """Placeholder class to make tests pass.
-
-    TODO Remove this placeholder class and replace with things from your PyPI package.
-    """
-
-    def __init__(self, host: str) -> None:
-        """Initialize."""
-        self.host = host
+class Greenelyhub:
 
     async def authenticate(self, email: str, password: str) -> bool:
         """Test if we can authenticate with the host."""
@@ -66,7 +58,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    hub = PlaceholderHub(data[CONF_EMAIL])
+    hub = Greenelyhub()
 
     if not await hub.authenticate(data[CONF_EMAIL], data[CONF_PASSWORD]):
         raise InvalidAuth
