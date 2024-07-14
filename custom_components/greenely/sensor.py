@@ -20,6 +20,7 @@ from .const import (
     GREENELY_PRODUCED_ELECTRICITY_DAYS,
     GREENELY_TIME_FORMAT,
     GREENELY_USAGE_DAYS,
+    GREENELY_FACILITY_ID,
     SENSOR_DAILY_PRODUCED_ELECTRICITY_NAME,
     SENSOR_DAILY_USAGE_NAME,
     SENSOR_HOURLY_USAGE_NAME,
@@ -38,7 +39,7 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     api = config_entry.runtime_data.api
-    facility_id = config_entry.runtime_data.facilitiyId
+    facility_id = str(config_entry.options.get(GREENELY_FACILITY_ID))
     usage_days = config_entry.options.get(GREENELY_USAGE_DAYS, 10)
     production_days = config_entry.options.get(GREENELY_PRODUCED_ELECTRICITY_DAYS, 10)
     hourly_offset_days = config_entry.options.get(GREENELY_HOURLY_OFFSET_DAYS, 1)
@@ -47,6 +48,8 @@ async def async_setup_entry(
     homekit_compatible = config_entry.options.get(GREENELY_HOMEKIT_COMPATIBLE, False)
 
     sensors = []
+
+    api.set_facility_id(facility_id)
 
     if config_entry.data.get(GREENELY_DAILY_USAGE, True):
         sensors.append(

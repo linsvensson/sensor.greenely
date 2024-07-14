@@ -40,6 +40,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_EMAIL): str,
         vol.Required(CONF_PASSWORD): str,
+        vol.Optional(GREENELY_FACILITY_ID): int,
     }
 )
 
@@ -64,7 +65,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         raise InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": "Greenely Config"}
+    return {"title": f"Greenely Config {data[GREENELY_FACILITY_ID]}"}
 
 
 class ConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -95,7 +96,12 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
             else:
                 return self.async_create_entry(
-                    title=info["title"], data=user_input, options={"daily_usage": True}
+                    title=info["title"],
+                    data=user_input,
+                    options={
+                        GREENELY_DAILY_USAGE: True,
+                        GREENELY_FACILITY_ID: user_input.get(GREENELY_FACILITY_ID, ""),
+                    },
                 )
 
         return self.async_show_form(
@@ -173,7 +179,7 @@ class GreenelyOptionsFlow(OptionsFlow):
                 vol.Optional(
                     GREENELY_FACILITY_ID,
                     default=self.config_entry.options.get(GREENELY_FACILITY_ID, ""),
-                ): str,
+                ): int,
                 vol.Optional(
                     GREENELY_HOMEKIT_COMPATIBLE,
                     default=self.config_entry.options.get(

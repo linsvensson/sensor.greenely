@@ -26,6 +26,10 @@ class GreenelyApi:
         self._password = password
         self._facility_id = "primary"
 
+    def set_facility_id(self, facility_id) -> None:
+        _LOGGER.debug("Setting facility id to %s", facility_id)
+        self._facility_id = str(facility_id)
+
     def get_price_data(self):
         today = datetime.today()
         nextMonth = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
