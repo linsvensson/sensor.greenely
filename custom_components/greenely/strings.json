@@ -1,0 +1,43 @@
+{
+    "config": {
+      "step": {
+        "user": {
+          "title": "Greenely",
+          "description": "Setup your Greenely account.",
+          "data": {
+            "email": "[%key:common::config_flow::data::email%]",
+            "password": "[%key:common::config_flow::data::password%]"
+          }
+        }
+      },
+      "error": {
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+        "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+        "unknown": "[%key:common::config_flow::error::unknown%]"
+      },
+      "abort": {
+        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Manage Sensors",
+          "data": {
+            "prices": "Price sensor",
+            "daily_usage": "Daily usage sensor",
+            "hourly_usage": "Hourly usage sensor",
+            "daily_produced_electricity": "Daily produced electricity sensor",
+            "usage_days": "Usage days",
+            "produced_electricity_days": "Produced electricity days",
+            "date_format": "Date format",
+            "time_format": "Time format",
+            "hourly_offset_days": "Hourly offset days",
+            "facility_id": "Facility ID",
+            "homekit_compatible": "HomeKit compatible"
+          }
+        }
+      }
+    }
+  }
+  
