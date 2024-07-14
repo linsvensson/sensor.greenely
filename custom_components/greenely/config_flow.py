@@ -49,7 +49,7 @@ class Greenelyhub:
     async def authenticate(self, email: str, password: str) -> bool:
         """Test if we can authenticate with the host."""
         api = GreenelyApi(email, password)
-        return await api.check_auth()
+        return api.check_auth()
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
