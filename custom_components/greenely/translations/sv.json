@@ -12,7 +12,8 @@
             "user": {
                 "data": {
                     "email": "Email",
-                    "password": "Password"
+                    "password": "Password",
+                    "facility_id": "Anläggnings-ID"
                 },
                 "description": "Konfigurera ditt Greenely-konto.",
                 "title": "Greenely"
@@ -36,6 +37,23 @@
                     "usage_days": "Förbrukningsdagar"
                 },
                 "title": "Hantera sensorer"
+            }
+        }
+    },
+    "services": {
+        "fetch_facilities": {
+            "name": "Hämta anläggningar",
+            "description": "Hämta anläggnings-ID från Greenely och skicka ut formaterade detaljer i en notis. Alternativt kan hela förfrågan skrivas i JSON-format.",
+            "fields": {
+                "email": {
+                    "description": "Emailadressen som är kopplad till ditt Greenely-konto."
+                },
+                "password": {
+                    "description": "Lösenordet som är kopplat till ditt Greenely-konto."
+                },
+                "output_json": {
+                    "description": "Skriv ut anläggningarna i json."
+                }
             }
         }
     }

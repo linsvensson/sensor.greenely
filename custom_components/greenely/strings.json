@@ -1,43 +1,63 @@
 {
-    "config": {
-      "step": {
-        "user": {
-          "title": "Greenely",
-          "description": "Setup your Greenely account.",
-          "data": {
-            "email": "[%key:common::config_flow::data::email%]",
-            "password": "[%key:common::config_flow::data::password%]"
-          }
+  "config": {
+    "step": {
+      "user": {
+        "title": "Greenely",
+        "description": "Setup your Greenely account.",
+        "data": {
+          "email": "[%key:common::config_flow::data::email%]",
+          "password": "[%key:common::config_flow::data::password%]",
+          "facility_id": "Facility ID"
         }
-      },
-      "error": {
-        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-        "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
-        "unknown": "[%key:common::config_flow::error::unknown%]"
-      },
-      "abort": {
-        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
       }
     },
-    "options": {
-      "step": {
-        "init": {
-          "title": "Manage Sensors",
-          "data": {
-            "prices": "Price sensor",
-            "daily_usage": "Daily usage sensor",
-            "hourly_usage": "Hourly usage sensor",
-            "daily_produced_electricity": "Daily produced electricity sensor",
-            "usage_days": "Usage days",
-            "produced_electricity_days": "Produced electricity days",
-            "date_format": "Date format",
-            "time_format": "Time format",
-            "hourly_offset_days": "Hourly offset days",
-            "facility_id": "Facility ID",
-            "homekit_compatible": "HomeKit compatible"
-          }
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Manage Sensors",
+        "data": {
+          "prices": "Price sensor",
+          "daily_usage": "Daily usage sensor",
+          "hourly_usage": "Hourly usage sensor",
+          "daily_produced_electricity": "Daily produced electricity sensor",
+          "usage_days": "Usage days",
+          "produced_electricity_days": "Produced electricity days",
+          "date_format": "Date format",
+          "time_format": "Time format",
+          "hourly_offset_days": "Hourly offset days",
+          "facility_id": "Facility ID",
+          "homekit_compatible": "HomeKit compatible"
+        }
+      }
+    }
+  },
+  "services": {
+    "fetch_facilities": {
+      "name": "Fetch Facilities",
+      "description": "Fetches the facility IDs from Greenely and outputs the formated details in a notification. Optionally, the complete output can also be sent in JSON format.",
+      "fields": {
+        "email": {
+          "name": "Email",
+          "description": "The email address associated with your Greenely account"
+        },
+        "password": {
+          "name": "Password",
+          "description": "The password associated with your Greenely account"
+        },
+        "output_json": {
+          "name": "Output JSON",
+          "description": "Whether to output the facilities as JSON"
         }
       }
     }
   }
-  
+}

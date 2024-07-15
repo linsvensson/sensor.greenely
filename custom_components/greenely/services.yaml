@@ -1,0 +1,13 @@
+fetch_facilities:
+  fields:
+    email:
+      example: "user@example.com"
+      default: "user@example.com"
+      required: true
+    password:
+      default: "password"
+      example: "password"
+      required: true
+    output_json:
+      required: false
+      example: false
