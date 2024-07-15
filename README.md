@@ -33,6 +33,10 @@ key | type | description
 **Email (Required)** | string | Your Greenely username.
 **Password (Required)** | string | Your Greenely password.
 **Facility ID (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility ids can be fetch using the service call greenely.fetch_factilites, this will output a notification displaying the facilities for your account.
+
+### Options variables
+key | type | description
+:--- | :--- | :---
 **Prices (Optional)** | boolean | Creates a sensor showing price data in kr/kWh. Default `true`.
 **Daily usage sensor (Optional)** | boolean | Creates a sensor showing daily usage data. The state of this sensor is yesterday's total usage. Default `true`.
 **Hourly usage sensor (Optional)** | boolean | Creates a sensor showing yesterday's hourly usage data. Default `false`.
@@ -43,6 +47,7 @@ key | type | description
 **Time format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
 **Hourly offset days (Optional)** | number | How many days ago you want the hourly data from. Default `1` (yesterday's data).
 **Homekit compatible (Optional)** | boolean | If you're using Homekit and need the current price data in the format `x.x °C`, enable this. Default `false`.
+**Facility ID (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility ids can be fetch using the service call greenely.fetch_factilites, this will output a notification displaying the facilities for your account.
 
 ## Services
 **Fetch factilites**
