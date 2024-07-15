@@ -141,6 +141,14 @@ class GreenelyApi:
         else:
             _LOGGER.error("Failed to fetch facility id %s", result.reason)
 
+    def get_facility_ids(self):
+        result = httpx.get(self._url_facilities_base, headers=self._headers)
+        if result.status_code == httpx.codes.ok:
+            data = result.json()["data"]
+            return data
+        else:
+            _LOGGER.error("Failed to fetch facility ids %s", result)
+
     def get_produced_electricity(self, startDate, endDate, showHourly):
         start = (
             "?from="
