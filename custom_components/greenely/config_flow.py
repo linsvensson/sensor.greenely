@@ -46,11 +46,19 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 
 class Greenelyhub:
+    """Class to authenticate with the host."""
 
-    async def authenticate(self, email: str, password: str) -> bool:
+    def __init__(self, email: str, password: str):
+        self.email = email
+        self.password = password
+        self.api = GreenelyApi(self.email, self.password)
+
+    async def authenticate(self) -> bool:
         """Test if we can authenticate with the host."""
-        api = GreenelyApi(email, password)
-        return api.check_auth()
+        return self.api.check_auth()
+
+    async def get_facility_id(self) -> int:
+        return int(self.api.get_facility_id())
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -59,13 +67,18 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    hub = Greenelyhub()
+    hub = Greenelyhub(data[CONF_EMAIL], data[CONF_PASSWORD])
 
-    if not await hub.authenticate(data[CONF_EMAIL], data[CONF_PASSWORD]):
+    if not await hub.authenticate():
         raise InvalidAuth
 
+    facilityId = data.get(GREENELY_FACILITY_ID, await hub.get_facility_id())
+
     # Return info that you want to store in the config entry.
-    return {"title": f"Greenely Config {data[GREENELY_FACILITY_ID]}"}
+    return {
+        "title": f"Greenely Facility {facilityId}",
+        "facility_id": facilityId,
+    }
 
 
 class ConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -95,13 +108,14 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
+                options = {
+                    GREENELY_DAILY_USAGE: True,
+                    GREENELY_FACILITY_ID: info["facility_id"],
+                }
                 return self.async_create_entry(
                     title=info["title"],
                     data=user_input,
-                    options={
-                        GREENELY_DAILY_USAGE: True,
-                        GREENELY_FACILITY_ID: user_input.get(GREENELY_FACILITY_ID, ""),
-                    },
+                    options=options,
                 )
 
         return self.async_show_form(
@@ -178,7 +192,7 @@ class GreenelyOptionsFlow(OptionsFlow):
                 ): int,
                 vol.Optional(
                     GREENELY_FACILITY_ID,
-                    default=self.config_entry.options.get(GREENELY_FACILITY_ID, ""),
+                    default=self.config_entry.options.get(GREENELY_FACILITY_ID),
                 ): int,
                 vol.Optional(
                     GREENELY_HOMEKIT_COMPATIBLE,
