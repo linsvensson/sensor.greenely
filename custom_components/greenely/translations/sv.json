@@ -1,0 +1,60 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Enheten är redan konfigurerad"
+        },
+        "error": {
+            "cannot_connect": "Misslyckades att ansluta",
+            "invalid_auth": "Felaktig autentisering",
+            "unknown": "Oväntat fel"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "email": "Email",
+                    "password": "Password",
+                    "facility_id": "Anläggnings-ID"
+                },
+                "description": "Konfigurera ditt Greenely-konto.",
+                "title": "Greenely"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "daily_produced_electricity": "Daglig producerad el sensor",
+                    "daily_usage": "Daglig förbrukning sensor",
+                    "date_format": "Datumformat",
+                    "facility_id": "Anläggnings-ID",
+                    "homekit_compatible": "HomeKit kompatibel",
+                    "hourly_offset_days": "Timvis förskjutning dagar",
+                    "hourly_usage": "Timvis förbrukning sensor",
+                    "prices": "Prissensor",
+                    "produced_electricity_days": "Producerad el dagar",
+                    "time_format": "Tidsformat",
+                    "usage_days": "Förbrukningsdagar"
+                },
+                "title": "Hantera sensorer"
+            }
+        }
+    },
+    "services": {
+        "fetch_facilities": {
+            "name": "Hämta anläggningar",
+            "description": "Hämta anläggnings-ID från Greenely och skicka ut formaterade detaljer i en notis. Alternativt kan hela förfrågan skrivas i JSON-format.",
+            "fields": {
+                "email": {
+                    "description": "Emailadressen som är kopplad till ditt Greenely-konto."
+                },
+                "password": {
+                    "description": "Lösenordet som är kopplat till ditt Greenely-konto."
+                },
+                "output_json": {
+                    "description": "Skriv ut anläggningarna i json."
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "email": "Email",
+                    "password": "Password",
+                    "facility_id": "Facility ID"
+                },
+                "description": "Setup your Greenely account.",
+                "title": "Greenely"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "daily_produced_electricity": "Daily produced electricity sensor",
+                    "daily_usage": "Daily usage sensor",
+                    "date_format": "Date format",
+                    "facility_id": "Facility ID",
+                    "homekit_compatible": "HomeKit compatible",
+                    "hourly_offset_days": "Hourly offset days",
+                    "hourly_usage": "Hourly usage sensor",
+                    "prices": "Price sensor",
+                    "produced_electricity_days": "Produced electricity days",
+                    "time_format": "Time format",
+                    "usage_days": "Usage days"
+                },
+                "title": "Manage Sensors"
+            }
+        }
+    },
+    "services": {
+        "fetch_facilities": {
+            "name": "Fetch Facilities",
+            "description": "Fetches the facility IDs from Greenely and outputs the formated details in a notification. Optionally, the complete output can also be sent in JSON format.",
+            "fields": {
+                "email": {
+                    "name": "Email",
+                    "description": "The email address associated with your Greenely account"
+                },
+                "password": {
+                    "name": "Password",
+                    "description": "The password associated with your Greenely account"
+                },
+                "output_json": {
+                    "name": "Output JSON",
+                    "description": "Whether to output the facilities as JSON"
+                }
+            }
+        }
+    }
+}

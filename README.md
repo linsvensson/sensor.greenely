@@ -22,54 +22,59 @@ Data is fetched every hour.
 - Restart Home-Assistant.
 
 ## Configuration
-Add the sensor `- platform: greenely` to your HA configuration.   
-    
-**Configuration with default settings:**
-```yaml
-sensor:
-  - platform: greenely
-    email: test@gmail.com
-    password: 1234
-```
-    
-**Configuration with custom settings:**
-```yaml
-sensor:
-  - platform: greenely
-    email: test@gmail.com
-    password: 1234
-    facility_id: '77081'
-    daily_usage: true
-    hourly_usage: true
-    hourly_offset_days: 2
-    usage_days: 4
-    prices: false
-    sold: true
-    sold_daily: true
-    sold_measure: 6
-    time_format: '%H:%M'
-    date_format: '%d/%m/%Y'
-    homekit_compatible: true
-```
+Is done using the UI, click Add integration and search for Greenely.
+The initial setup needs your Email and Password for the Greenely account, optionally you could specify the Facility ID.
+
+Options for additional sensors and settings can be found in the configuration of that integration in the UI.
 
 ### Configuration variables
 key | type | description
 :--- | :--- | :---
-**platform (Required)** | string | `greenely`
-**email (Required)** | string | Your Greenely username.
-**password (Required)** | string | Your Greenely password.
-**facility_id (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility id's can be found eg. by installing Android Studio and in a Play Store enabled device emulator (indicated by the Play Icon) install the Greenely app. Run app, login with your Greenely credentials, and use Logcat in Android Studio, filtered on Greenely to find the facility ID. In the app, switch between the registered facilities to find out the different facility IDs. Or, if you use Postman, import [this](https://www.dropbox.com/s/jmoo24tikbre4ep/greenely%20test.postman_collection.json?dl=0) and send login and then facilities.   Default `primary`.
-**daily_usage (Optional)** | boolean | Creates a sensor showing daily usage data. The state of this sensor is yesterday's total usage. Default `true`.
-**hourly_usage (Optional)** | boolean | Creates a sensor showing yesterday's hourly usage data. Default `false`.
-**sold (Optional)** | boolean | Creates a sensor showing sold electricity data. The state of this sensor is the total value. Default `false`.
-**prices (Optional)** | boolean | Creates a sensor showing price data in kr/kWh. Default `true`.
-**hourly_offset_days (Optional)** | number | How many days ago you want the hourly data from. Default `1` (yesterday's data).
-**usage_days (Optional)** | number | How many days of usage data you want. Default `10`.
-**sold_measure (Optional)** | number | How many months or days of sold data you want to see. Default `2`.
-**sold_daily (Optional)** | boolean | Show daily sold data instead of monthly. Default `false`.
-**date_format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
-**time_format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
-**homekit_compatible (Optional)** | boolean | If you're using Homekit and need the current price data in the format `x.x °C`, enable this. Default `false`.
+**Email (Required)** | string | Your Greenely username.
+**Password (Required)** | string | Your Greenely password.
+**Facility ID (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility ids can be fetch using the service call greenely.fetch_factilites, this will output a notification displaying the facilities for your account.
+
+### Options variables
+key | type | description
+:--- | :--- | :---
+**Prices (Optional)** | boolean | Creates a sensor showing price data in kr/kWh. Default `true`.
+**Daily usage sensor (Optional)** | boolean | Creates a sensor showing daily usage data. The state of this sensor is yesterday's total usage. Default `true`.
+**Hourly usage sensor (Optional)** | boolean | Creates a sensor showing yesterday's hourly usage data. Default `false`.
+**Daily produced electricity sensor (Optional)** | boolean | Creates a sensor showing daily produced electricity data. The state of this sensor is the total value. Default `false`.
+**Usage days (Optional)** | number | How many days of usage data you want. Default `10`.
+**Produced electricity days (Optional)** | number | How many days of produced electricity data you want. Default `10`.
+**Date format (Optional)** | string | Default `%b %d %Y`, shows up as `Jan 18 2020`. [References](https://strftime.org/)
+**Time format (Optional)** | string | Default `%H:%M`, shows up as `10:00`. [References](https://strftime.org/)
+**Hourly offset days (Optional)** | number | How many days ago you want the hourly data from. Default `1` (yesterday's data).
+**Homekit compatible (Optional)** | boolean | If you're using Homekit and need the current price data in the format `x.x °C`, enable this. Default `false`.
+**Facility ID (Optional)** | string | If you have more than one facility and know the facility ID you want data from, put it here.  Note: The facility ids can be fetch using the service call greenely.fetch_factilites, this will output a notification displaying the facilities for your account.
+
+## Services
+**Fetch factilites**
+This service will fetch the facilites data and output it into a formated notification displaying the following. ID, Street, Zip code, City and Primary attributes for each of your facilites.
+
+Field | Type | Description
+:--- | :--- | :---
+**Email (Required)** | string | Your Greenely username.
+**Password (Required)** | string | Your Greenely password.
+**Output json (Optional)** | boolean | Will output the complete payload from Greenely in json format into an additional notification. Default `false`.
+
+Example without json output:
+```yaml
+service: greenely.fetch_facilities
+data:
+  email: user@example.com
+  password: password
+```
+
+Example with json output:
+```yaml
+service: greenely.fetch_facilities
+data:
+  email: user@example.com
+  password: password
+  output_json: true
+```
 
 ## Lovelace
 **Example chart with [ApexCharts Card](https://github.com/RomRider/apexcharts-card):**

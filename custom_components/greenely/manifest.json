@@ -1,11 +1,14 @@
 {
   "domain": "greenely",
   "name": "Greenely Sensors",
-  "version": "1.0.7",
-  "documentation": "https://github.com/linsvensson/sensor.greenely",
-  "issue_tracker": "https://github.com/linsvensson/sensor.greenely/issues",
   "codeowners": ["@linsvensson"],
-  "requirements": [],
+  "config_flow": true,
+  "dependencies": [],
+
+  "documentation": "https://github.com/linsvensson/sensor.greenely",
   "iot_class": "cloud_polling",
-  "dependencies": []
+  "issue_tracker": "https://github.com/linsvensson/sensor.greenely/issues",
+  "requirements": [],
+  "translations": ["translations"],
+  "version": "2.1.1"
 }
