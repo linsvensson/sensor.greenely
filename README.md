@@ -25,7 +25,11 @@ Data is fetched every hour.
 Is done using the UI, click Add integration and search for Greenely.
 The initial setup needs your Email and Password for the Greenely account, optionally you could specify the Facility ID.
 
-Options for additional sensors and settings can be found in the configuration of that integration in the UI.
+For additional options go to integrations and select Greenely.
+Press configure
+![alt text](Images/Integration.png)
+Options for additional sensors and settings are now displayed.
+![alt text](Images/Options.png)
 
 ### Configuration variables
 key | type | description
