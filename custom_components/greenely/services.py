@@ -30,7 +30,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         password = call.data[CONF_PASSWORD]
 
         api = GreenelyApi(email, password)
-        if not api.check_auth():
+        if not await hass.async_add_executor_job(api.check_auth):
             await hass.services.async_call(
                 NOTIFY_DOMAIN,
                 "persistent_notification",
@@ -39,7 +39,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:
             )
 
         else:
-            facilityIds = api.get_facility_ids()
+            facilityIds = await hass.async_add_executor_job(api.get_facility_ids)
             _LOGGER.info("Facilities fetched successfully")
 
             facilityIdsOutput = []

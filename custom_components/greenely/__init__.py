@@ -36,9 +36,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreenelyConfigEntry) -> 
 
     entry.async_on_unload(entry.add_update_listener(async_update_options))
 
-    if api.check_auth():
+    if await hass.async_add_executor_job(api.check_auth):
         facilityId = (
-            api.get_facility_id()
+            await hass.async_add_executor_job(api.get_facility_id)
             if entry.data.get(GREENELY_FACILITY_ID, "") == ""
             else entry.data[GREENELY_FACILITY_ID]
         )

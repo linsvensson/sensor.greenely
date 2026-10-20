@@ -48,17 +48,18 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 class Greenelyhub:
     """Class to authenticate with the host."""
 
-    def __init__(self, email: str, password: str):
+    def __init__(self, hass: HomeAssistant, email: str, password: str):
+        self.hass = hass
         self.email = email
         self.password = password
         self.api = GreenelyApi(self.email, self.password)
 
     async def authenticate(self) -> bool:
         """Test if we can authenticate with the host."""
-        return self.api.check_auth()
+        return await self.hass.async_add_executor_job(self.api.check_auth)
 
     async def get_facility_id(self) -> int:
-        return int(self.api.get_facility_id())
+        return int(await self.hass.async_add_executor_job(self.api.get_facility_id))
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -67,7 +68,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    hub = Greenelyhub(data[CONF_EMAIL], data[CONF_PASSWORD])
+    hub = Greenelyhub(hass, data[CONF_EMAIL], data[CONF_PASSWORD])
 
     if not await hub.authenticate():
         raise InvalidAuth
